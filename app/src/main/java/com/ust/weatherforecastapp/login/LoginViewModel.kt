@@ -1,0 +1,7 @@
+package com.ust.weatherforecastapp.login
+
+import androidx.lifecycle.ViewModel
+
+class LoginViewModel : ViewModel() {
+    // TODO: Implement the ViewModel
+}
