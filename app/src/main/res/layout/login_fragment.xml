@@ -11,40 +11,55 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/editTextTextEmailAddress"
+            android:id="@+id/et_emailSignIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:ems="10"
             android:hint="Email"
-            android:textAlignment="center"
             android:inputType="textEmailAddress"
-            app:layout_constraintBottom_toTopOf="@+id/editTextTextPassword2"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/et_passwordSignIn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <EditText
-            android:id="@+id/editTextTextPassword2"
+            android:id="@+id/et_passwordSignIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:ems="10"
             android:hint="Password"
-            android:textAlignment="center"
             android:inputType="textPassword"
-            app:layout_constraintBottom_toTopOf="@+id/button2"
-            app:layout_constraintEnd_toEndOf="@+id/editTextTextEmailAddress"
-            app:layout_constraintStart_toStartOf="@+id/editTextTextEmailAddress"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/btn_signInWithEmail"
+            app:layout_constraintEnd_toEndOf="@+id/et_emailSignIn"
+            app:layout_constraintStart_toStartOf="@+id/et_emailSignIn"
+            app:layout_constraintTop_toBottomOf="@+id/et_emailSignIn" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/btn_signInWithEmail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             android:text="Login"
+            app:layout_constraintBottom_toTopOf="@+id/btn_googleSignIn"
+            app:layout_constraintEnd_toEndOf="@+id/et_passwordSignIn"
+            app:layout_constraintStart_toStartOf="@+id/et_passwordSignIn"
+            app:layout_constraintTop_toBottomOf="@+id/et_passwordSignIn" />
+
+        <Button
+            android:id="@+id/btn_googleSignIn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Sign In With Google"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/editTextTextPassword2"
-            app:layout_constraintStart_toStartOf="@+id/editTextTextPassword2"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2" />
+            app:layout_constraintEnd_toEndOf="@+id/btn_signInWithEmail"
+            app:layout_constraintStart_toStartOf="@+id/btn_signInWithEmail"
+            app:layout_constraintTop_toBottomOf="@+id/btn_signInWithEmail" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
