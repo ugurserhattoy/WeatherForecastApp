@@ -4,13 +4,21 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.ust.weatherforecastapp.R
+import com.ust.weatherforecastapp.data.remote.ConnectivityInterceptorImpl
+import com.ust.weatherforecastapp.data.remote.RemoteWeatherDataSource
+import com.ust.weatherforecastapp.data.remote.RemoteWeatherDataSourceImpl
+import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.forecast_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class ForecastFragment : Fragment() {
@@ -43,6 +51,18 @@ class ForecastFragment : Fragment() {
             signOut()
             navBar.visibility = View.VISIBLE
         }
+        val apiService =
+            RemoteWeatherService(ConnectivityInterceptorImpl(this.requireContext()))
+        val remoteWeatherDataSource = RemoteWeatherDataSourceImpl(apiService)
+
+        remoteWeatherDataSource.downloadedCurrentWeather.observe(viewLifecycleOwner, Observer {
+            tv_testApiService.text = it.toString()
+        })
+
+        GlobalScope.launch(Dispatchers.Main) {
+            remoteWeatherDataSource.fetchRemoteWeather(38.00, 42.00)
+        }
+
     }
 
     private fun signOut() {
