@@ -8,10 +8,12 @@ import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 
 @Database(
     entities = [CurrentWeatherEntry::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class ForecastDatabase: RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao
+    abstract fun currentLocationDao(): CurrentLocationDao
 
     companion object {
         @Volatile private var instance: ForecastDatabase? = null //all of the threads will access to property

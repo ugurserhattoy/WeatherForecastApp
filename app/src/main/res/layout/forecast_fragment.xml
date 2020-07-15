@@ -10,6 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontal_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
@@ -39,15 +53,100 @@
                 android:text="Logout" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_testApiService"
+        <ProgressBar
+            android:id="@+id/progressBar_forecast"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="TextView"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ic_weather_condition"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="32dp"
+            android:src="@android:drawable/ic_menu_compass"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guideline"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24.0°C"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="32dp"
+            app:layout_constraintEnd_toEndOf="@+id/ic_weather_condition"
+            app:layout_constraintStart_toStartOf="@+id/ic_weather_condition"
+            app:layout_constraintTop_toBottomOf="@+id/ic_weather_condition" />
+
+        <TextView
+            android:id="@+id/tv_feelsLike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Feels Like 21.0°C"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_temperature"
+            app:layout_constraintStart_toStartOf="@+id/tv_temperature"
+            app:layout_constraintTop_toBottomOf="@+id/tv_temperature" />
+
+        <TextView
+            android:id="@+id/tv_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Humidity: 70%"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_feelsLike"
+            app:layout_constraintStart_toStartOf="@+id/tv_feelsLike"
+            app:layout_constraintTop_toBottomOf="@+id/tv_feelsLike" />
+
+        <TextView
+            android:id="@+id/tv_wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Wind: 3.91m/s"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_humidity"
+            app:layout_constraintStart_toStartOf="@+id/tv_humidity"
+            app:layout_constraintTop_toBottomOf="@+id/tv_humidity" />
+
+        <TextView
+            android:id="@+id/tv_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Visibility: 10000m"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_wind"
+            app:layout_constraintStart_toStartOf="@+id/tv_wind"
+            app:layout_constraintTop_toBottomOf="@+id/tv_wind" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/ib_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTintMode="screen"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:tint="#BF0D0D"
+            android:tintMode="src_in"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

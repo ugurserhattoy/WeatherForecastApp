@@ -33,5 +33,16 @@
         <action
             android:id="@+id/to_login_action"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.ust.weatherforecastapp.settings.SettingsFragment"
+        android:label="Settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_forecastFragment"
+            app:destination="@id/forecastFragment" />
     </fragment>
 </navigation>

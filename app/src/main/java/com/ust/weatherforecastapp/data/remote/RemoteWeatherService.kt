@@ -64,4 +64,4 @@ interface RemoteWeatherService {
     }
 }
 
-//This interface is based on an open course by Matej Rešetár a.k.a. ResoCoder
+//This interface is imitated from resocoder.com
