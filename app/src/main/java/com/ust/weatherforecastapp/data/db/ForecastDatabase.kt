@@ -13,7 +13,7 @@ import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 )
 abstract class ForecastDatabase: RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao
-    abstract fun currentLocationDao(): CurrentLocationDao
+//    abstract fun currentLocationDao(): CurrentLocationDao
 
     companion object {
         @Volatile private var instance: ForecastDatabase? = null //all of the threads will access to property

@@ -21,13 +21,13 @@ class ForecastApplication : Application(), DIAware {
 
         bind() from singleton { ForecastDatabase(instance()) }
         bind() from singleton { instance<ForecastDatabase>().currentWeatherDao() }
-        bind() from singleton { instance<ForecastDatabase>().currentLocationDao() }
+//        bind() from singleton { instance<ForecastDatabase>().currentLocationDao() }
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { RemoteWeatherService(instance()) } //DI gets the instance from the above
         bind<RemoteWeatherDataSource>() with singleton { RemoteWeatherDataSourceImpl(instance()) }
         bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
         bind<LocationProvider>() with singleton { LocationProviderImpl(instance(), instance()) }
-        bind<ForecastRepository>() with singleton { ForecastRepositoryImpl(instance(), instance(), instance(), instance()) }
+        bind<ForecastRepository>() with singleton { ForecastRepositoryImpl(instance(), instance(), instance()) }
         bind() from provider { ForecastViewModelFactory(instance()) }
     }
 

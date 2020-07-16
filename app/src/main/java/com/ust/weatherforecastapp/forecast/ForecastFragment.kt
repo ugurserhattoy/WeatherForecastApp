@@ -93,23 +93,23 @@ class ForecastFragment : ScopedFragment(), DIAware {
     private fun bindUI() = launch{
         val currentWeather = viewModel.weather.await()
 
-        val weatherLocation = viewModel.weatherLocation.await()
+//        val weatherLocation = viewModel.weatherLocation.await()
 
 
 
-        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
-            if (location == null) return@Observer
-            val geocoder: Geocoder
-            val addresses: List<Address>
-            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
-
-            addresses = geocoder.getFromLocation(
-                location.lat,
-                location.lon,
-                1
-            )
-            updateLocation(addresses[0].getLocality())
-        })
+//        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
+//            if (location == null) return@Observer
+//            val geocoder: Geocoder
+//            val addresses: List<Address>
+//            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
+//
+//            addresses = geocoder.getFromLocation(
+//                location.lat,
+//                location.lon,
+//                1
+//            )
+//            updateLocation(addresses[0].getLocality())
+//        })
 
         currentWeather.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer

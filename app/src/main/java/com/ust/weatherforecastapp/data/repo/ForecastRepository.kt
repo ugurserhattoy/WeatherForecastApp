@@ -7,5 +7,5 @@ import com.ust.weatherforecastapp.data.remote.response.RemoteWeatherResponse
 interface ForecastRepository {
     suspend fun getCurrentWeather(): LiveData<CurrentWeatherEntry>
 
-    suspend fun getCurrentLocation(): LiveData<RemoteWeatherResponse>
+//    suspend fun getCurrentLocation(): LiveData<RemoteWeatherResponse>
 }

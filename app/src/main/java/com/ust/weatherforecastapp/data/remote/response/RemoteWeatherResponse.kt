@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.db.entity.ForecastWeatherEntry
 
-const val CURRENT_WEATHER_ID = 0
+//const val CURRENT_WEATHER_ID = 0
 
-@Entity(tableName = "current_location")
+//@Entity(tableName = "current_location")
 data class RemoteWeatherResponse(
 
     @SerializedName("current")
@@ -21,8 +21,9 @@ data class RemoteWeatherResponse(
     val timezone: String,
     @SerializedName("timezone_offset")
     val timezoneOffset: Int
-){
-    @PrimaryKey(autoGenerate = false)
-    var id: Int = CURRENT_WEATHER_ID
-
-}
+)
+//{
+//    @PrimaryKey(autoGenerate = false)
+//    var id: Int = CURRENT_WEATHER_ID
+//
+//}

@@ -11,7 +11,7 @@ class ForecastViewModel(
         forecastRepository.getCurrentWeather()
     }
 
-    val weatherLocation by lazyDeferred {
-        forecastRepository.getCurrentLocation()
-    }
+//    val weatherLocation by lazyDeferred {
+//        forecastRepository.getCurrentLocation()
+//    }
 }

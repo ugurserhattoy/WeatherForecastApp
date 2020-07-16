@@ -2,7 +2,7 @@ package com.ust.weatherforecastapp.data.repo
 
 
 import androidx.lifecycle.LiveData
-import com.ust.weatherforecastapp.data.db.CurrentLocationDao
+//import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherDao
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.provider.LocationProvider
@@ -18,8 +18,8 @@ import org.threeten.bp.ZonedDateTime
 class ForecastRepositoryImpl(
     private val currentWeatherDao: CurrentWeatherDao,
     private val remoteWeatherDataSource: RemoteWeatherDataSource,
-    private val locationProvider: LocationProvider,
-    private val currentLocationDao: CurrentLocationDao
+    private val locationProvider: LocationProvider
+//    private val currentLocationDao: CurrentLocationDao
 ) : ForecastRepository {
 
     init {
@@ -36,12 +36,12 @@ class ForecastRepositoryImpl(
             return@withContext currentWeatherDao.getCurrentWeather()
         }
     }
-
-    override suspend fun getCurrentLocation(): LiveData<RemoteWeatherResponse> {
-        return withContext(Dispatchers.IO) {
-            return@withContext currentLocationDao.getLocation()
-        }
-    }
+//
+//    override suspend fun getCurrentLocation(): LiveData<RemoteWeatherResponse> {
+//        return withContext(Dispatchers.IO) {
+//            return@withContext currentLocationDao.getLocation()
+//        }
+//    }
 
 
     private fun persistFetchedCurrentWeather(fetchedWeather: RemoteWeatherResponse) {
