@@ -1,8 +1,10 @@
 package com.ust.weatherforecastapp.forecast
 
+import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.JsonReader
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,16 +15,26 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.squareup.picasso.Picasso
 import com.ust.weatherforecastapp.R
 import com.ust.weatherforecastapp.ScopedFragment
+import com.ust.weatherforecastapp.data.remote.ConnectivityInterceptorImpl
+import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.forecast_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.kodein.di.DIAware
 import org.kodein.di.android.x.closestDI
 import org.kodein.di.instance
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.reflect.typeOf
 
 
 class ForecastFragment : ScopedFragment(), DIAware {
@@ -81,11 +93,29 @@ class ForecastFragment : ScopedFragment(), DIAware {
 //        val postalCode: String = addresses[0].getPostalCode()
 //        val knownName: String = addresses[0].getFeatureName()
 
-//        GlobalScope.launch(Dispatchers.Main) {
-//            val currentWeatherResponse = RemoteWeatherService(ConnectivityInterceptorImpl(view?.context as Context)).getOneCallForWeather(28.00, 38.00)
-//            tv_direct.text = currentWeatherResponse.toString()
-//        }
+        GlobalScope.launch(Dispatchers.Main) {
 
+            val currentWeatherResponse =
+                RemoteWeatherService(ConnectivityInterceptorImpl(view?.context as Context))
+                    .getOneCallForWeather(28.00, 38.00)
+            var fetchedData = currentWeatherResponse.toString().substringAfter("[")
+                .substringBefore("]")
+            fetchedData = fetchedData.substringAfter("Weather")
+            fetchedData = fetchedData.removeSurrounding("(",")")
+            val fetchedDataMap = convertStringToMap(fetchedData)
+
+//            val fetchedDataToJson = JSONObject(fetchedData)
+            Log.d(TAG, "fetchedData: " + fetchedData)
+            Log.d(TAG, "fetchedDataMap: " + fetchedDataMap["main"])
+        }
+
+    }
+
+    fun convertStringToMap(mapAsString: String): Map<String, String> {
+        return mapAsString.split(", ").associate {
+            val (left, right) = it.split("=")
+            left to right
+        }
     }
 
 

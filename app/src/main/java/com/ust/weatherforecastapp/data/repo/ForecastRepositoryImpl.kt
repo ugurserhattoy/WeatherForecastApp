@@ -36,6 +36,8 @@ class ForecastRepositoryImpl(
             return@withContext currentWeatherDao.getCurrentWeather()
         }
     }
+
+
 //
 //    override suspend fun getCurrentLocation(): LiveData<RemoteWeatherResponse> {
 //        return withContext(Dispatchers.IO) {
