@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.text.Editable
 import android.util.JsonReader
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.google.gson.GsonBuilder
 import com.squareup.picasso.Picasso
 import com.ust.weatherforecastapp.R
 import com.ust.weatherforecastapp.ScopedFragment
+import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import com.ust.weatherforecastapp.data.remote.ConnectivityInterceptorImpl
 import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
 import kotlinx.android.synthetic.main.activity_main.*
@@ -41,8 +43,7 @@ class ForecastFragment : ScopedFragment(), DIAware {
     override val di by closestDI()
     private val viewModelFactory: ForecastViewModelFactory by instance()
 
-
-    val TAG = "ForecastFragment"
+    private val TAG = "ForecastFragment"
     private lateinit var viewModel: ForecastViewModel
     private lateinit var  navBar: BottomNavigationView
 
@@ -105,25 +106,26 @@ class ForecastFragment : ScopedFragment(), DIAware {
             if (it == null) return@Observer
 
             updateWeatherConditionIcon("4x", it.icon)
+            updateWeatherDescription(it.description.toUpperCase())
+
         })
 
-//        val weatherLocation = viewModel.weatherLocation.await()
+        val weatherLocation = viewModel.weatherLocation.await()
 
+        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
+            Log.d(TAG, "location= $location")
+            if (location == null) return@Observer
+            val geocoder: Geocoder
+            val addresses: List<Address>
+            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
 
-
-//        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
-//            if (location == null) return@Observer
-//            val geocoder: Geocoder
-//            val addresses: List<Address>
-//            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
-//
-//            addresses = geocoder.getFromLocation(
-//                location.lat,
-//                location.lon,
-//                1
-//            )
-//            updateLocation(addresses[0].getLocality())
-//        })
+            addresses = geocoder.getFromLocation(
+                location.lat,
+                location.lon,
+                1
+            )
+            updateLocation(addresses[0].getLocality())
+        })
 
         currentWeather.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
@@ -142,8 +144,12 @@ class ForecastFragment : ScopedFragment(), DIAware {
             .into(ic_weather_condition)
     }
 
+    private fun updateWeatherDescription (description: String) {
+        tv_weather_description.text = description
+    }
+
     private fun updateLocation(location: String) {
-        (activity as? AppCompatActivity)?.supportActionBar?.title = location
+        textView.text = location
     }
 
     private fun updateDateToToday() {

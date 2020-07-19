@@ -6,16 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
+import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 
 @Database(
-    entities = [CurrentWeatherEntry::class, CurrentWeatherWeather::class],
+    entities = [CurrentWeatherEntry::class, CurrentWeatherWeather::class, WeatherLocation::class],
     version = 1,
     exportSchema = false
 )
 abstract class ForecastDatabase: RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao
     abstract fun currentWeatherWeatherDao(): CurrentWeatherWeatherDao
-//    abstract fun currentLocationDao(): CurrentLocationDao
+    abstract fun currentLocationDao(): CurrentLocationDao
 
     companion object {
         @Volatile private var instance: ForecastDatabase? = null //all of the threads will access to property

@@ -14,7 +14,6 @@
             android:key="CUSTOM_LOCATION"
             android:title="Location"
             android:summary="The location for which the weather is displayed"
-            android:defaultValue="Izmir"
             android:dependency="USE_DEVICE_LOCATION"/>
     </PreferenceCategory>
 

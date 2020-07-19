@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <AutoCompleteTextView
-                android:id="@+id/autoCompleteTextView"
+                android:id="@+id/tv_search_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
@@ -64,6 +64,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <TextView
+            android:id="@+id/tv_weather_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/ic_weather_condition"
+            app:layout_constraintEnd_toEndOf="@+id/ic_weather_condition"
+            app:layout_constraintStart_toStartOf="@+id/ic_weather_condition"
+            tools:layout_editor_absoluteY="64dp" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ic_weather_condition"
@@ -147,6 +158,15 @@
             android:tintMode="src_in"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/horizontal_guideline"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guideline"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

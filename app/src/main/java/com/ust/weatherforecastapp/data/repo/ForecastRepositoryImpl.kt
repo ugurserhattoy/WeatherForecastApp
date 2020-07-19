@@ -1,14 +1,15 @@
 package com.ust.weatherforecastapp.data.repo
 
 
-//import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
+import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherWeatherDao
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
+import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 import com.ust.weatherforecastapp.data.provider.LocationProvider
 import com.ust.weatherforecastapp.data.remote.RemoteWeatherDataSource
 import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
@@ -25,8 +26,8 @@ class ForecastRepositoryImpl(
     private val currentWeatherWeatherDao: CurrentWeatherWeatherDao,
     private val remoteWeatherDataSource: RemoteWeatherDataSource,
     private val locationProvider: LocationProvider,
-    private val remoteWeatherService: RemoteWeatherService
-//    private val currentLocationDao: CurrentLocationDao
+    private val remoteWeatherService: RemoteWeatherService,
+    private val currentLocationDao: CurrentLocationDao
 ) : ForecastRepository {
 
     init {
@@ -39,6 +40,12 @@ class ForecastRepositoryImpl(
         remoteWeatherDataSource.apply {
             downloadedCurrentWeatherWeather.observeForever {
                 persistFetchedCurrentWeatherWeather(it)
+            }
+        }
+
+        remoteWeatherDataSource.apply {
+            downloadedCurrentLocation.observeForever {
+                persistFetchedCurrentLocation(it)
             }
         }
     }
@@ -57,12 +64,12 @@ class ForecastRepositoryImpl(
     }
 
 
-//
-//    override suspend fun getCurrentLocation(): LiveData<RemoteWeatherResponse> {
-//        return withContext(Dispatchers.IO) {
-//            return@withContext currentLocationDao.getLocation()
-//        }
-//    }
+
+    override suspend fun getCurrentLocation(): LiveData<WeatherLocation> {
+        return withContext(Dispatchers.IO) {
+            return@withContext currentLocationDao.getLocation()
+        }
+    }
 
 
     private fun persistFetchedCurrentWeather(fetchedWeather: RemoteWeatherResponse) {
@@ -77,52 +84,46 @@ class ForecastRepositoryImpl(
         }
     }
 
+    private fun persistFetchedCurrentLocation(fetchedLocation: WeatherLocation) {
+        GlobalScope.launch(Dispatchers.IO) {
+            currentLocationDao.updateCurrentLocation(fetchedLocation)
+        }
+    }
+
     private suspend fun initWeatherData() {
-        if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1)))
+        val lastWeatherLocation = currentLocationDao.getLocation().value
+
+        if (lastWeatherLocation == null
+            || locationProvider.hasLocationChanged(lastWeatherLocation)) {
             fetchCurrentWeather()
+            return
+        }
+
+        if (isFetchCurrentNeeded(lastWeatherLocation.zonedDateTime))
+            fetchCurrentWeather()
+
+//        if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1)))
+//            fetchCurrentWeather()
     }
 
     private suspend fun fetchCurrentWeather() {
-        val prefString = locationProvider.getPreferredLocationString()
+        val prefLocationString = locationProvider.getPreferredLocationString()
+        Log.d("RepositoryImpl", "prefLocationString: " + prefLocationString)
+        val deviceLatitude = prefLocationString.substringBefore(",")
+        Log.d("RepositoryImpl", "deviceLatitude: " + deviceLatitude)
+        val deviceLongitude = prefLocationString.substringAfter(", ")
+        Log.d("RepositoryImpl", "deviceLongitude: " + deviceLongitude)
+
+
         remoteWeatherDataSource.fetchRemoteWeather(
-            38.46,
-            27.09
+            25.00,
+            38.00
         )
     }
 
     private fun isFetchCurrentNeeded(lastFetchTime: org.threeten.bp.ZonedDateTime): Boolean {
         val thirtyMinutesAgo = org.threeten.bp.ZonedDateTime.now().minusMinutes(30)
         return lastFetchTime.isBefore(thirtyMinutesAgo)
-    }
-
-    private fun updateWeatherListSenselessly() {
-        GlobalScope.launch(Dispatchers.IO) {
-
-            val currentWeatherResponse =
-                remoteWeatherService.getOneCallForWeather(28.00, 38.00)
-            var fetchedData = currentWeatherResponse.toString().substringAfter("[")
-                .substringBefore("]")
-            fetchedData = fetchedData.substringAfter("Weather")
-            fetchedData = fetchedData.removeSurrounding("(",")")
-            val fetchedDataMap = convertStringToMap(fetchedData)
-            val fetchedDataMapFinal = Gson().toJson(fetchedDataMap.toString())
-            Log.d("RepositoryImpl", "fetchedDataMapFinal: " + fetchedDataMapFinal)
-
-//            val weather: Type =
-//                object : TypeToken<List<Weather?>?>() {}.type
-//            val lcs: List<Weather>? = Gson()
-//                .fromJson(fetchedDataMapFinal, weather) as List<Weather>?
-//            currentWeatherDao.updateWeather(lcs)
-
-//            currentWeatherDao.updateWeatherId(fetchedDataMap["id"]?.toInt() as Int)
-//            currentWeatherDao.updateWeatherMain(fetchedDataMap["main"].toString())
-//            currentWeatherDao.updateWeatherDescription(fetchedDataMap["description"].toString())
-//            currentWeatherDao.updateWeatherIcon(fetchedDataMap["icon"].toString())
-
-
-            Log.d("RepositoryImpl", "fetchedData: " + fetchedData)
-            Log.d("RepositoryImpl", "fetchedDataMap: " + fetchedDataMap["main"])
-        }
     }
 
     fun convertStringToMap(mapAsString: String): Map<String, String> {

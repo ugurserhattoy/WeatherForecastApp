@@ -1,9 +1,16 @@
 package com.ust.weatherforecastapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
@@ -17,6 +24,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseUser
 import org.kodein.di.DIAware
@@ -26,6 +34,8 @@ import org.kodein.di.instance
 private const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
 
 class MainActivity : AppCompatActivity(), DIAware {
+
+    val TAG = "MainActivity"
 
     override val di by closestDI()
     private val fusedLocationProviderClient: FusedLocationProviderClient by instance()
@@ -37,6 +47,12 @@ class MainActivity : AppCompatActivity(), DIAware {
     }
 
     private lateinit var  navController: NavController
+
+    lateinit var locationManager: LocationManager
+    private var hasGPS = false
+    private var hasNetwork = false
+    private var locationGPS: Location? = null
+    private var locationNetwork: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +68,68 @@ class MainActivity : AppCompatActivity(), DIAware {
             bindLocationManager()
         }else
             requestLocationPermission()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        hasGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        if (hasGPS || hasNetwork) {
+            if (hasGPS){
+                Log.d(TAG, "hasGPS")
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    5000,
+                    0F,
+                    object : LocationListener {
+                        override fun onLocationChanged(p0: Location) {
+                            if (p0!=null) {
+                                locationGPS = p0
+                                Log.d(TAG, "locationGPS1: $locationGPS")
+                                Log.d(TAG, "locationGPS1: " + locationGPS!!.longitude + " | "
+                                + locationGPS!!.latitude)
+
+                            }
+                        }
+                    })
+                val localGPSLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                if (localGPSLocation!=null) {
+                    locationGPS = localGPSLocation
+                    Log.d(TAG, "locationGPS2: $locationGPS")
+                }
+            }
+            if (hasNetwork){
+                Log.d(TAG, "hasNetwork")
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    5000,
+                    0F,
+                    object : LocationListener {
+                        override fun onLocationChanged(p0: Location) {
+                            if (p0!=null) {
+                                locationNetwork = p0
+                                Log.d(TAG, "locationNetwork1: $locationNetwork")
+                            }
+                        }
+                    })
+                val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                if (localNetworkLocation!=null) {
+                    locationNetwork = localNetworkLocation
+                    Log.d(TAG, "locationNetwork2: $locationNetwork")
+                }
+            }
+            if (locationGPS!=null && locationNetwork!=null){
+                if (locationGPS!!.accuracy >= locationNetwork!!.accuracy) {
+                    Log.d(TAG, "NetworkLatitude: " + locationNetwork!!.latitude)
+                    Log.d(TAG, "NetworkLongitude: " + locationNetwork!!.longitude)
+                }else {
+                    Log.d(TAG, "GPSLatitude: " + locationGPS!!.latitude)
+                    Log.d(TAG, "GPSLongitude: " + locationGPS!!.longitude)
+                }
+            }
+        }else{
+            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }
+
     }
     
     fun updateUI (user: FirebaseUser?, view: View, resIdToNavigateTo:Int, mContext: Context?) {
@@ -83,6 +161,9 @@ class MainActivity : AppCompatActivity(), DIAware {
             this,
             fusedLocationProviderClient, locationCallback
         )
+
+        getLastLocation()
+
     }
 
     override fun onRequestPermissionsResult(

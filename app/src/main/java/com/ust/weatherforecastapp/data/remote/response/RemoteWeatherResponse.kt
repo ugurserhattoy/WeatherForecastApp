@@ -1,11 +1,10 @@
 package com.ust.weatherforecastapp.data.remote.response
 
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.db.entity.ForecastWeatherEntry
+import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 
 //const val CURRENT_WEATHER_ID = 0
 
@@ -16,11 +15,13 @@ data class RemoteWeatherResponse(
     val currentWeatherEntry: CurrentWeatherEntry?,
     @SerializedName("daily")
     val forecastWeatherEntry: List<ForecastWeatherEntry>?,
-    val lat: Double,
-    val lon: Double,
-    val timezone: String,
-    @SerializedName("timezone_offset")
-    val timezoneOffset: Int
+    val location: WeatherLocation
+//    val lat: Double,
+//    val lon: Double,
+//    val timezone: String,
+//    @SerializedName("timezone_offset")
+//    val timezoneOffset: Int
+
 )
 //{
 //    @PrimaryKey(autoGenerate = false)

@@ -11,6 +11,7 @@ import com.ust.weatherforecastapp.data.provider.LocationProviderImpl
 import com.ust.weatherforecastapp.data.remote.*
 import com.ust.weatherforecastapp.data.repo.ForecastRepository
 import com.ust.weatherforecastapp.data.repo.ForecastRepositoryImpl
+import com.ust.weatherforecastapp.forecast.ForecastFragment
 import com.ust.weatherforecastapp.forecast.ForecastViewModelFactory
 import org.kodein.di.*
 import org.kodein.di.android.x.androidXModule
@@ -22,13 +23,14 @@ class ForecastApplication : Application(), DIAware {
         bind() from singleton { ForecastDatabase(instance()) }
         bind() from singleton { instance<ForecastDatabase>().currentWeatherDao() }
         bind() from singleton { instance<ForecastDatabase>().currentWeatherWeatherDao() }
-//        bind() from singleton { instance<ForecastDatabase>().currentLocationDao() }
+        bind() from singleton { instance<ForecastDatabase>().currentLocationDao() }
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { RemoteWeatherService(instance()) } //DI gets the instance from the above
-        bind<RemoteWeatherDataSource>() with singleton { RemoteWeatherDataSourceImpl(instance()) }
+        bind<RemoteWeatherDataSource>() with singleton { RemoteWeatherDataSourceImpl(instance(), instance()) }
         bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
         bind<LocationProvider>() with singleton { LocationProviderImpl(instance(), instance()) }
-        bind<ForecastRepository>() with singleton { ForecastRepositoryImpl(instance(), instance(), instance(), instance(), instance()) }
+        bind<ForecastRepository>() with singleton { ForecastRepositoryImpl(instance(), instance(),
+            instance(), instance(), instance(), instance()) }
         bind() from provider { ForecastViewModelFactory(instance()) }
     }
 
