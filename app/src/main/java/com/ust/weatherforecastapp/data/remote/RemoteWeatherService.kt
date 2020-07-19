@@ -1,5 +1,6 @@
 package com.ust.weatherforecastapp.data.remote
 
+import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
 import com.ust.weatherforecastapp.data.remote.response.RemoteWeatherResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

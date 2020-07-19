@@ -92,36 +92,20 @@ class ForecastFragment : ScopedFragment(), DIAware {
 //        val country: String = addresses[0].getCountryName()
 //        val postalCode: String = addresses[0].getPostalCode()
 //        val knownName: String = addresses[0].getFeatureName()
-
-        GlobalScope.launch(Dispatchers.Main) {
-
-            val currentWeatherResponse =
-                RemoteWeatherService(ConnectivityInterceptorImpl(view?.context as Context))
-                    .getOneCallForWeather(28.00, 38.00)
-            var fetchedData = currentWeatherResponse.toString().substringAfter("[")
-                .substringBefore("]")
-            fetchedData = fetchedData.substringAfter("Weather")
-            fetchedData = fetchedData.removeSurrounding("(",")")
-            val fetchedDataMap = convertStringToMap(fetchedData)
-
-//            val fetchedDataToJson = JSONObject(fetchedData)
-            Log.d(TAG, "fetchedData: " + fetchedData)
-            Log.d(TAG, "fetchedDataMap: " + fetchedDataMap["main"])
-        }
-
-    }
-
-    fun convertStringToMap(mapAsString: String): Map<String, String> {
-        return mapAsString.split(", ").associate {
-            val (left, right) = it.split("=")
-            left to right
-        }
     }
 
 
 
     private fun bindUI() = launch{
         val currentWeather = viewModel.weather.await()
+
+        val currentWeatherWeather = viewModel.currentWeatherWeather.await()
+
+        currentWeatherWeather.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+
+            updateWeatherConditionIcon("4x", it.icon)
+        })
 
 //        val weatherLocation = viewModel.weatherLocation.await()
 
@@ -150,9 +134,12 @@ class ForecastFragment : ScopedFragment(), DIAware {
             updateVisibility(it.visibility)
             updateWindSpeed(it.windSpeed)
 
-            Picasso.get().load("http://openweathermap.org/img/wn/02d@2x.png")
-                .into(ic_weather_condition)
         })
+    }
+
+    private fun updateWeatherConditionIcon (multiplier: String = "4x", icon: String = "02d") {
+        Picasso.get().load("http://openweathermap.org/img/wn/$icon@$multiplier.png")
+            .into(ic_weather_condition)
     }
 
     private fun updateLocation(location: String) {

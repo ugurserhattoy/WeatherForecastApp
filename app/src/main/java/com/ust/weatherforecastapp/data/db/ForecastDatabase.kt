@@ -5,14 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
+import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
 
 @Database(
-    entities = [CurrentWeatherEntry::class],
+    entities = [CurrentWeatherEntry::class, CurrentWeatherWeather::class],
     version = 1,
     exportSchema = false
 )
 abstract class ForecastDatabase: RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao
+    abstract fun currentWeatherWeatherDao(): CurrentWeatherWeatherDao
 //    abstract fun currentLocationDao(): CurrentLocationDao
 
     companion object {

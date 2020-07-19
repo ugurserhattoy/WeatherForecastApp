@@ -1,5 +1,6 @@
 package com.ust.weatherforecastapp.data.db.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -18,7 +19,7 @@ data class CurrentWeatherEntry(
     val temp: Double,
     val visibility: Int,
     @Embedded(prefix = "weather_")
-    val weather: ArrayList<Weather>?,
+    val weather: ArrayList<WeatherX>?,
     @SerializedName("wind_deg")
     val windDeg: Double,
     @SerializedName("wind_speed")
