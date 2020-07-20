@@ -5,4 +5,5 @@ import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 interface LocationProvider {
     suspend fun getPreferredLocationString(): String
     suspend fun hasLocationChanged(lastWeatherLocation: WeatherLocation): Boolean
+    suspend fun getLastLocation(): List<Double>
 }

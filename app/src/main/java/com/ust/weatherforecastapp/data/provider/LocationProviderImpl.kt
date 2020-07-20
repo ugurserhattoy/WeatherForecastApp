@@ -9,6 +9,7 @@ import android.location.*
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.observe
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -29,6 +30,7 @@ class LocationProviderImpl(
 ) : PreferenceProvider(context), LocationProvider {
 
     private val appContext = context.applicationContext
+    private val TAG = "LocationProvider"
 
     lateinit var locationManager: LocationManager
     private var hasGPS = false
@@ -105,68 +107,81 @@ class LocationProviderImpl(
         return false
     }
 
-    /*@SuppressLint("MissingPermission")
-    private fun getLastLocation() {
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    @SuppressLint("MissingPermission")
+    override suspend fun getLastLocation(): List<Double>  {
+        locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         hasGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        if (hasGPS || hasNetwork) {
-            if (hasGPS){
-                Log.d(TAG, "hasGPS")
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    5000,
-                    0F,
-                    object : LocationListener {
-                        override fun onLocationChanged(p0: Location) {
-                            if (p0!=null) {
-                                locationGPS = p0
-                                Log.d(TAG, "locationGPS1: $locationGPS")
-                                Log.d(TAG, "locationGPS1: " + locationGPS!!.longitude + " | "
-                                        + locationGPS!!.latitude)
+        if (hasLocationPermission()) {
+            if (hasGPS || hasNetwork) {
+                if (hasGPS){
+                    Log.d(TAG, "hasGPS")
+                    locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        5000,
+                        0F,
+                        object : LocationListener {
+                            override fun onLocationChanged(p0: Location) {
+                                if (p0!=null) {
+                                    locationGPS = p0
+//                                    Log.d(TAG, "locationGPS1: $locationGPS")
+//                                    Log.d(TAG, "locationGPS1: " + locationGPS!!.longitude + " | "
+//                                            + locationGPS!!.latitude)
 
+                                }
                             }
-                        }
-                    })
-                val localGPSLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                if (localGPSLocation!=null) {
-                    locationGPS = localGPSLocation
-                    Log.d(TAG, "locationGPS2: $locationGPS")
+                        })
+                    val localGPSLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    if (localGPSLocation!=null) {
+                        locationGPS = localGPSLocation
+//                        Log.d(TAG, "locationGPS2: $locationGPS")
+                    }
                 }
-            }
-            if (hasNetwork){
-                Log.d(TAG, "hasNetwork")
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    5000,
-                    0F,
-                    object : LocationListener {
-                        override fun onLocationChanged(p0: Location) {
-                            if (p0!=null) {
-                                locationNetwork = p0
-                                Log.d(TAG, "locationNetwork1: $locationNetwork")
+                if (hasNetwork){
+                    Log.d(TAG, "hasNetwork")
+                    locationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        5000,
+                        0F,
+                        object : LocationListener {
+                            override fun onLocationChanged(p0: Location) {
+                                if (p0!=null) {
+                                    locationNetwork = p0
+//                                    Log.d(TAG, "locationNetwork1: $locationNetwork")
+                                }
                             }
-                        }
-                    })
-                val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                if (localNetworkLocation!=null) {
-                    locationNetwork = localNetworkLocation
-                    Log.d(TAG, "locationNetwork2: $locationNetwork")
+                        })
+                    val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                    if (localNetworkLocation!=null) {
+                        locationNetwork = localNetworkLocation
+//                        Log.d(TAG, "locationNetwork2: $locationNetwork")
+                    }
                 }
-            }
-            if (locationGPS!=null && locationNetwork!=null){
-                if (locationGPS!!.accuracy >= locationNetwork!!.accuracy) {
-                    Log.d(TAG, "NetworkLatitude: " + locationNetwork!!.latitude)
-                    Log.d(TAG, "NetworkLongitude: " + locationNetwork!!.longitude)
-                }else {
-                    Log.d(TAG, "GPSLatitude: " + locationGPS!!.latitude)
-                    Log.d(TAG, "GPSLongitude: " + locationGPS!!.longitude)
+                if (locationGPS!=null && locationNetwork!=null){
+                    if (locationGPS!!.accuracy >= locationNetwork!!.accuracy) {
+//                        Log.d(TAG, "NetworkLatitude: " + locationNetwork!!.latitude)
+//                        Log.d(TAG, "NetworkLongitude: " + locationNetwork!!.longitude)
+                        val finalLocation = listOf<Double>((locationNetwork!!.latitude).toDouble(),
+                            locationNetwork!!.longitude.toDouble())
+                        return finalLocation
+                    }else {
+//                        Log.d(TAG, "GPSLatitude: " + locationGPS!!.latitude)
+//                        Log.d(TAG, "GPSLongitude: " + locationGPS!!.longitude)
+                        val finalLocation = listOf<Double>((locationGPS!!.latitude).toDouble(),
+                            locationGPS!!.longitude.toDouble())
+                        return finalLocation
+                    }
                 }
+                val finalLocation = listOf(27.00, 38.00)
+                return finalLocation
+            }else{
+                appContext.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                val finalLocation = listOf(27.00, 38.00)
+                return finalLocation
             }
-        }else{
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        }
+        }else
+            return (throw LocationPermissionNotGrantedException())
 
-    }*/
+    }
 
 }

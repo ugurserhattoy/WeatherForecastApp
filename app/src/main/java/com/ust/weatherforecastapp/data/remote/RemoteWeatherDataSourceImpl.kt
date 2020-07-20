@@ -1,26 +1,17 @@
 package com.ust.weatherforecastapp.data.remote
 
-import android.Manifest
+
 import android.annotation.SuppressLint
-import android.app.Application
-import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.ust.weatherforecastapp.MainActivity
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
 import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
-import com.ust.weatherforecastapp.data.provider.LocationProvider
 import com.ust.weatherforecastapp.data.remote.response.RemoteWeatherResponse
-import com.ust.weatherforecastapp.forecast.ForecastFragment
 import com.ust.weatherforecastapp.interior.NoConnectivityException
-import com.ust.weatherforecastapp.interior.asDeferred
-import java.lang.Exception
 import java.lang.reflect.Type
 
 class RemoteWeatherDataSourceImpl(

@@ -1,9 +1,11 @@
 package com.ust.weatherforecastapp.data.repo
 
 
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
+import android.widget.Toast
 import androidx.lifecycle.LiveData
-import com.google.gson.Gson
 import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherWeatherDao
@@ -18,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.threeten.bp.ZonedDateTime
 
 
 class ForecastRepositoryImpl(
@@ -107,17 +108,18 @@ class ForecastRepositoryImpl(
     }
 
     private suspend fun fetchCurrentWeather() {
-        val prefLocationString = locationProvider.getPreferredLocationString()
-        Log.d("RepositoryImpl", "prefLocationString: " + prefLocationString)
-        val deviceLatitude = prefLocationString.substringBefore(",")
-        Log.d("RepositoryImpl", "deviceLatitude: " + deviceLatitude)
-        val deviceLongitude = prefLocationString.substringAfter(", ")
-        Log.d("RepositoryImpl", "deviceLongitude: " + deviceLongitude)
+//        val prefLocationString = locationProvider.getPreferredLocationString()
+//        Log.d("RepositoryImpl", "prefLocationString: " + prefLocationString)
+//        val deviceLatitude = prefLocationString.substringBefore(",")
+//        Log.d("RepositoryImpl", "deviceLatitude: " + deviceLatitude)
+//        val deviceLongitude = prefLocationString.substringAfter(", ")
+//        Log.d("RepositoryImpl", "deviceLongitude: " + deviceLongitude)
 
 
+        val lastLocation = locationProvider.getLastLocation()
         remoteWeatherDataSource.fetchRemoteWeather(
-            25.00,
-            38.00
+            lastLocation[0],
+            lastLocation[1]
         )
     }
 
