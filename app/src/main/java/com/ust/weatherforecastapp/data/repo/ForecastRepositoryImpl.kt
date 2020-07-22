@@ -1,25 +1,27 @@
 package com.ust.weatherforecastapp.data.repo
 
 
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
-import android.widget.Toast
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asFlow
 import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherWeatherDao
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
+import com.ust.weatherforecastapp.data.db.LocationEntryDao
+import com.ust.weatherforecastapp.data.db.entity.LocationEntry
 import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 import com.ust.weatherforecastapp.data.provider.LocationProvider
 import com.ust.weatherforecastapp.data.remote.RemoteWeatherDataSource
 import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
 import com.ust.weatherforecastapp.data.remote.response.RemoteWeatherResponse
+import com.ust.weatherforecastapp.locationLatLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.threeten.bp.ZonedDateTime
 
 
 class ForecastRepositoryImpl(
@@ -27,8 +29,9 @@ class ForecastRepositoryImpl(
     private val currentWeatherWeatherDao: CurrentWeatherWeatherDao,
     private val remoteWeatherDataSource: RemoteWeatherDataSource,
     private val locationProvider: LocationProvider,
-    private val remoteWeatherService: RemoteWeatherService,
-    private val currentLocationDao: CurrentLocationDao
+//    private val remoteWeatherService: RemoteWeatherService,
+//    private val currentLocationDao: CurrentLocationDao,
+    private val locationEntryDao: LocationEntryDao
 ) : ForecastRepository {
 
     init {
@@ -45,10 +48,17 @@ class ForecastRepositoryImpl(
         }
 
         remoteWeatherDataSource.apply {
-            downloadedCurrentLocation.observeForever {
-                persistFetchedCurrentLocation(it)
+            downloadedLocationEntry.observeForever {
+                Log.d("ForecastRepoImpl", "it:LocationEntry= $it")
+                persistFetchedLocationEntry(it)
             }
         }
+
+//        remoteWeatherDataSource.apply {
+//            downloadedCurrentLocation.observeForever {
+//                persistFetchedCurrentLocation(it)
+//            }
+//        }
     }
 
     override suspend fun getCurrentWeather(): LiveData<CurrentWeatherEntry> {
@@ -64,13 +74,19 @@ class ForecastRepositoryImpl(
         }
     }
 
-
-
-    override suspend fun getCurrentLocation(): LiveData<WeatherLocation> {
+    override suspend fun getLocationEntry(): LiveData<LocationEntry> {
         return withContext(Dispatchers.IO) {
-            return@withContext currentLocationDao.getLocation()
+            Log.d("ForecastRepoImpl", "locEntryDao: ${locationEntryDao.getLocation()}")
+            return@withContext locationEntryDao.getLocation()
         }
     }
+
+
+//    override suspend fun getCurrentLocation(): LiveData<WeatherLocation> {
+//        return withContext(Dispatchers.IO) {
+//            return@withContext currentLocationDao.getLocation()
+//        }
+//    }
 
 
     private fun persistFetchedCurrentWeather(fetchedWeather: RemoteWeatherResponse) {
@@ -85,53 +101,54 @@ class ForecastRepositoryImpl(
         }
     }
 
-    private fun persistFetchedCurrentLocation(fetchedLocation: WeatherLocation) {
+    private fun persistFetchedLocationEntry(fetchedLocation: LocationEntry) {
         GlobalScope.launch(Dispatchers.IO) {
-            currentLocationDao.updateCurrentLocation(fetchedLocation)
+            val locationPlace = locationEntryDao.getLocationPlaceName()
+            val locationOffline = locationEntryDao.getLocationOffline()
+            Log.d("ForecastRepoImpl", "locationPlace: $locationPlace / locationOffline: $locationOffline")
+            locationEntryDao.updateCurrentLocation(fetchedLocation)
         }
     }
 
-    private suspend fun initWeatherData() {
-        val lastWeatherLocation = currentLocationDao.getLocation().value
+//    private fun persistFetchedCurrentLocation(fetchedLocation: WeatherLocation) {
+//        GlobalScope.launch(Dispatchers.IO) {
+//            currentLocationDao.updateCurrentLocation(fetchedLocation)
+//        }
+//    }
 
-        if (lastWeatherLocation == null
-            || locationProvider.hasLocationChanged(lastWeatherLocation)) {
+    private suspend fun initWeatherData() {
+//        val lastWeatherLocation = currentLocationDao.getLocation().value
+//
+//        if (lastWeatherLocation == null
+//            || locationProvider.hasLocationChanged(lastWeatherLocation)) {
+//            fetchCurrentWeather()
+//            return
+//        }
+        val lastLocationEntry = locationEntryDao.getLocation().value
+
+        if (lastLocationEntry == null ||
+                locationProvider.hasLocationChanged(lastLocationEntry)) {
             fetchCurrentWeather()
             return
         }
-
-        if (isFetchCurrentNeeded(lastWeatherLocation.zonedDateTime))
-            fetchCurrentWeather()
-
-//        if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1)))
+//
+//        if (isFetchCurrentNeeded(lastWeatherLocation.zonedDateTime))
 //            fetchCurrentWeather()
+
+        if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1)))
+            fetchCurrentWeather()
     }
 
     private suspend fun fetchCurrentWeather() {
-//        val prefLocationString = locationProvider.getPreferredLocationString()
-//        Log.d("RepositoryImpl", "prefLocationString: " + prefLocationString)
-//        val deviceLatitude = prefLocationString.substringBefore(",")
-//        Log.d("RepositoryImpl", "deviceLatitude: " + deviceLatitude)
-//        val deviceLongitude = prefLocationString.substringAfter(", ")
-//        Log.d("RepositoryImpl", "deviceLongitude: " + deviceLongitude)
-
-
-        val lastLocation = locationProvider.getLastLocation()
+        val prefLocationString = locationProvider.getPreferredLocationString()
         remoteWeatherDataSource.fetchRemoteWeather(
-            lastLocation[0],
-            lastLocation[1]
+            prefLocationString[0],
+            prefLocationString[1]
         )
     }
 
     private fun isFetchCurrentNeeded(lastFetchTime: org.threeten.bp.ZonedDateTime): Boolean {
         val thirtyMinutesAgo = org.threeten.bp.ZonedDateTime.now().minusMinutes(30)
         return lastFetchTime.isBefore(thirtyMinutesAgo)
-    }
-
-    fun convertStringToMap(mapAsString: String): Map<String, String> {
-        return mapAsString.split(", ").associate {
-            val (left, right) = it.split("=")
-            left to right
-        }
     }
 }

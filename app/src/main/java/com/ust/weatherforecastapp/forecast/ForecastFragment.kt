@@ -1,11 +1,7 @@
 package com.ust.weatherforecastapp.forecast
 
 import android.content.Context
-import android.location.Address
-import android.location.Geocoder
 import android.os.Bundle
-import android.text.Editable
-import android.util.JsonReader
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,44 +10,49 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.squareup.picasso.Picasso
 import com.ust.weatherforecastapp.R
 import com.ust.weatherforecastapp.ScopedFragment
-import com.ust.weatherforecastapp.data.db.CurrentLocationDao
-import com.ust.weatherforecastapp.data.remote.ConnectivityInterceptorImpl
-import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
+import com.ust.weatherforecastapp.locationLatLong
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.forecast_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.kodein.di.DIAware
 import org.kodein.di.android.x.closestDI
 import org.kodein.di.instance
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.reflect.typeOf
 
+lateinit var contextJ: Context
 
-class ForecastFragment : ScopedFragment(), DIAware {
+class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
     override val di by closestDI()
     private val viewModelFactory: ForecastViewModelFactory by instance()
 
     private val TAG = "ForecastFragment"
     private lateinit var viewModel: ForecastViewModel
     private lateinit var  navBar: BottomNavigationView
+    lateinit var googleMap: GoogleMap
+    var mapFragment: SupportMapFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         navBar = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(OnMapReadyCallback {
+            googleMap = it
+            val locationA = LatLng(locationLatLong[0], locationLatLong[1])
+            googleMap.addMarker(MarkerOptions().position(locationA).title("The Location"))
+        })
+
         return inflater.inflate(R.layout.forecast_fragment, container, false)
     }
 
@@ -60,6 +61,8 @@ class ForecastFragment : ScopedFragment(), DIAware {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(ForecastViewModel::class.java)
+
+        contextJ = this.context as Context
 
         navBar.visibility = View.INVISIBLE
 
@@ -99,8 +102,8 @@ class ForecastFragment : ScopedFragment(), DIAware {
 
     private fun bindUI() = launch{
         val currentWeather = viewModel.weather.await()
-
         val currentWeatherWeather = viewModel.currentWeatherWeather.await()
+        val locationEntry = viewModel.locationEntry.await()
 
         currentWeatherWeather.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
@@ -110,22 +113,28 @@ class ForecastFragment : ScopedFragment(), DIAware {
 
         })
 
-        val weatherLocation = viewModel.weatherLocation.await()
+        locationEntry.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
 
-        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
-            Log.d(TAG, "location= $location")
-            if (location == null) return@Observer
-            val geocoder: Geocoder
-            val addresses: List<Address>
-            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
-
-            addresses = geocoder.getFromLocation(
-                location.lat,
-                location.lon,
-                1
-            )
-            updateLocation(addresses[0].getLocality())
+            updateLocation(it.name)
         })
+
+//        val weatherLocation = viewModel.weatherLocation.await()
+//
+//        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
+//            Log.d(TAG, "location= $location")
+//            if (location == null) return@Observer
+//            val geocoder: Geocoder
+//            val addresses: List<Address>
+//            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
+//
+//            addresses = geocoder.getFromLocation(
+//                location.lat,
+//                location.lon,
+//                1
+//            )
+//            updateLocation(addresses[0].getLocality())
+//        })
 
         currentWeather.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
@@ -179,6 +188,10 @@ class ForecastFragment : ScopedFragment(), DIAware {
         auth.signOut()
         bottomNavigationView?.visibility = View.VISIBLE
         Navigation.findNavController(this.view as View).navigate(R.id.to_login_action)
+    }
+
+    override fun onMapReady(p0: GoogleMap?) {
+        TODO("Not yet implemented")
     }
 
 }

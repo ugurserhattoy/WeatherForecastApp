@@ -1,6 +1,9 @@
 package com.ust.weatherforecastapp
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.location.LocationManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner

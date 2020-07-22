@@ -2,6 +2,8 @@ package com.ust.weatherforecastapp
 
 import android.app.Application
 import android.content.Context
+import android.location.LocationManager
+import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
 import com.google.android.gms.location.LocationServices
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -23,14 +25,16 @@ class ForecastApplication : Application(), DIAware {
         bind() from singleton { ForecastDatabase(instance()) }
         bind() from singleton { instance<ForecastDatabase>().currentWeatherDao() }
         bind() from singleton { instance<ForecastDatabase>().currentWeatherWeatherDao() }
-        bind() from singleton { instance<ForecastDatabase>().currentLocationDao() }
+//        bind() from singleton { instance<ForecastDatabase>().currentLocationDao() }
+        bind() from singleton { instance<ForecastDatabase>().locationEntryDao() }
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { RemoteWeatherService(instance()) } //DI gets the instance from the above
         bind<RemoteWeatherDataSource>() with singleton { RemoteWeatherDataSourceImpl(instance(), instance()) }
         bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
+        bind() from provider { getSystemService(Context.LOCATION_SERVICE) }
         bind<LocationProvider>() with singleton { LocationProviderImpl(instance(), instance()) }
         bind<ForecastRepository>() with singleton { ForecastRepositoryImpl(instance(), instance(),
-            instance(), instance(), instance(), instance()) }
+            instance(), instance(), instance()) }
         bind() from provider { ForecastViewModelFactory(instance()) }
     }
 

@@ -44,5 +44,10 @@
         <action
             android:id="@+id/action_settingsFragment_to_forecastFragment"
             app:destination="@id/forecastFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_forecastFragment2"
+            app:destination="@id/forecastFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
     </fragment>
 </navigation>
