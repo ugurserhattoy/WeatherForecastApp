@@ -63,7 +63,9 @@ class MainActivity : AppCompatActivity(), DIAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        locationLatLong = getLastLocation()
+        try {
+            locationLatLong = getLastLocation()
+        }catch (e:LocationPermissionNotGrantedException){}
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         navController = findNavController(R.id.fragment)
@@ -160,11 +162,6 @@ class MainActivity : AppCompatActivity(), DIAware {
         }
         if (locationGPS==null) {
             requestLocationPermission()
-            if (hasLocationPermission()){
-                return getLastLocation()
-            }else {
-                startActivity(Intent(Settings.ACTION_APPLICATION_SETTINGS))
-            }
         }
         return listOf((locationGPS!!.latitude),locationGPS!!.longitude)
 
