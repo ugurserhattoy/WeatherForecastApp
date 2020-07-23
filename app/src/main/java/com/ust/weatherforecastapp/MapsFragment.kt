@@ -22,7 +22,7 @@ class MapsFragment : Fragment() {
         googleMap.clear()
         googleMap.addMarker(MarkerOptions().position(izmir).title("place"))
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(izmir))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundBuilder.build(), 0, 0, 0))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundBuilder.build(), 1000, 1000, 0))
     }
 
     override fun onCreateView(

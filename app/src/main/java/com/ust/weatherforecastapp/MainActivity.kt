@@ -63,9 +63,7 @@ class MainActivity : AppCompatActivity(), DIAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        try {
-            locationLatLong = getLastLocation()
-        }catch (e:LocationPermissionNotGrantedException){}
+
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         navController = findNavController(R.id.fragment)
@@ -80,8 +78,15 @@ class MainActivity : AppCompatActivity(), DIAware {
 
     }
 
+    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
+        try {
+            getLastLocation()
+        } catch (e:LocationPermissionNotGrantedException) {}
+        return super.onCreateView(name, context, attrs)
+    }
+
     @SuppressLint("MissingPermission")
-    fun getLastLocation(): List<Double> {
+    fun getLastLocation() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         hasGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
@@ -110,7 +115,7 @@ class MainActivity : AppCompatActivity(), DIAware {
                     if (localGPSLocation != null) {
                         locationGPS = localGPSLocation
                         Log.d(TAG, "locationGPS2: $locationGPS")
-                        return listOf(
+                        locationLatLong = listOf(
                             (locationGPS!!.latitude),
                             locationGPS!!.longitude
                         )
@@ -134,7 +139,7 @@ class MainActivity : AppCompatActivity(), DIAware {
                     if (localNetworkLocation != null) {
                         locationNetwork = localNetworkLocation
                         Log.d(TAG, "locationNetwork2: $locationNetwork")
-                        return listOf(
+                        locationLatLong = listOf(
                             (locationNetwork!!.latitude),
                             locationNetwork!!.longitude
                         )
@@ -144,10 +149,14 @@ class MainActivity : AppCompatActivity(), DIAware {
                     if (locationGPS!!.accuracy >= locationNetwork!!.accuracy) {
                         Log.d(TAG, "NetworkLatitude: " + locationNetwork!!.latitude)
                         Log.d(TAG, "NetworkLongitude: " + locationNetwork!!.longitude)
+                        locationLatLong = listOf(
+                            (locationNetwork!!.latitude),
+                            locationNetwork!!.longitude
+                        )
                     } else {
                         Log.d(TAG, "GPSLatitude: " + locationGPS!!.latitude)
                         Log.d(TAG, "GPSLongitude: " + locationGPS!!.longitude)
-                        return listOf(
+                        locationLatLong = listOf(
                             (locationGPS!!.latitude),
                             locationGPS!!.longitude
                         )
@@ -163,7 +172,7 @@ class MainActivity : AppCompatActivity(), DIAware {
         if (locationGPS==null) {
             requestLocationPermission()
         }
-        return listOf((locationGPS!!.latitude),locationGPS!!.longitude)
+        locationLatLong = listOf((locationGPS!!.latitude),locationGPS!!.longitude)
 
     }
     

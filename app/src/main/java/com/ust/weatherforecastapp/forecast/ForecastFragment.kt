@@ -15,6 +15,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -38,14 +39,6 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
     private val TAG = "ForecastFragment"
     private lateinit var viewModel: ForecastViewModel
     private lateinit var  navBar: BottomNavigationView
-    lateinit var googleMap: GoogleMap
-    var mapFragment: SupportMapFragment? = null
-
-    private val callback = OnMapReadyCallback { googleMap ->
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,21 +46,7 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
     ): View? {
         navBar = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
-//        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-//        mapFragment = parentFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-//        mapFragment?.getMapAsync(OnMapReadyCallback {
-//            googleMap = it
-//            val locationA = LatLng(locationLatLong[0], locationLatLong[1])
-//            googleMap.addMarker(MarkerOptions().position(locationA).title("The Location"))
-//        })
-
         return inflater.inflate(R.layout.forecast_fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
     }
 
 
@@ -91,25 +70,6 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
 
         bindUI()
 
-//        val geocoder: Geocoder
-//        val addresses: List<Address>
-//        geocoder = Geocoder(this.context, Locale.getDefault())
-//
-//        addresses = geocoder.getFromLocation(
-//            latitude,
-//            longitude,
-//            1
-//        ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-//
-//
-//        val address: String = addresses[0]
-//            .getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-//
-//        val city: String = addresses[0].getLocality()
-//        val state: String = addresses[0].getAdminArea()
-//        val country: String = addresses[0].getCountryName()
-//        val postalCode: String = addresses[0].getPostalCode()
-//        val knownName: String = addresses[0].getFeatureName()
     }
 
 
@@ -130,25 +90,8 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
         locationEntry.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
 
-            updateLocation(it.name)
+            updateLocation(it.name, it.lat, it.lon)
         })
-
-//        val weatherLocation = viewModel.weatherLocation.await()
-//
-//        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
-//            Log.d(TAG, "location= $location")
-//            if (location == null) return@Observer
-//            val geocoder: Geocoder
-//            val addresses: List<Address>
-//            geocoder = Geocoder(context?.applicationContext, Locale.getDefault())
-//
-//            addresses = geocoder.getFromLocation(
-//                location.lat,
-//                location.lon,
-//                1
-//            )
-//            updateLocation(addresses[0].getLocality())
-//        })
 
         currentWeather.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
@@ -171,8 +114,17 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
         tv_weather_description.text = description
     }
 
-    private fun updateLocation(location: String) {
+    private fun updateLocation(location: String, lat: Double, lon:Double) {
         textView.text = location
+        var callback = OnMapReadyCallback { googleMap ->
+            val mLatLng = LatLng(lat, lon)
+            googleMap.addMarker(MarkerOptions().position(mLatLng).title(location))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 10f))
+        }
+
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(callback)
+
     }
 
     private fun updateDateToToday() {
