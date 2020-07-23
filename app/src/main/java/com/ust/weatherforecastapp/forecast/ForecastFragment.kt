@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -40,20 +41,33 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
     lateinit var googleMap: GoogleMap
     var mapFragment: SupportMapFragment? = null
 
+    private val callback = OnMapReadyCallback { googleMap ->
+        val sydney = LatLng(-34.0, 151.0)
+        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         navBar = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
-        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(OnMapReadyCallback {
-            googleMap = it
-            val locationA = LatLng(locationLatLong[0], locationLatLong[1])
-            googleMap.addMarker(MarkerOptions().position(locationA).title("The Location"))
-        })
+//        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+//        mapFragment = parentFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+//        mapFragment?.getMapAsync(OnMapReadyCallback {
+//            googleMap = it
+//            val locationA = LatLng(locationLatLong[0], locationLatLong[1])
+//            googleMap.addMarker(MarkerOptions().position(locationA).title("The Location"))
+//        })
 
         return inflater.inflate(R.layout.forecast_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(callback)
     }
 
 

@@ -3,11 +3,13 @@ package com.ust.weatherforecastapp
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
@@ -156,9 +158,16 @@ class MainActivity : AppCompatActivity(), DIAware {
             requestLocationPermission()
             throw LocationPermissionNotGrantedException()
         }
-        return listOf(
-            (locationGPS!!.latitude),
-            locationGPS!!.longitude)
+        if (locationGPS==null) {
+            requestLocationPermission()
+            if (hasLocationPermission()){
+                return getLastLocation()
+            }else {
+                startActivity(Intent(Settings.ACTION_APPLICATION_SETTINGS))
+            }
+        }
+        return listOf((locationGPS!!.latitude),locationGPS!!.longitude)
+
     }
     
     fun updateUI (user: FirebaseUser?, view: View, resIdToNavigateTo:Int, mContext: Context?) {
