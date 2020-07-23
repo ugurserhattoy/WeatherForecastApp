@@ -3,20 +3,15 @@ package com.ust.weatherforecastapp.data.repo
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.asFlow
-import com.ust.weatherforecastapp.data.db.CurrentLocationDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherDao
 import com.ust.weatherforecastapp.data.db.CurrentWeatherWeatherDao
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherEntry
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
 import com.ust.weatherforecastapp.data.db.LocationEntryDao
 import com.ust.weatherforecastapp.data.db.entity.LocationEntry
-import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 import com.ust.weatherforecastapp.data.provider.LocationProvider
 import com.ust.weatherforecastapp.data.remote.RemoteWeatherDataSource
-import com.ust.weatherforecastapp.data.remote.RemoteWeatherService
 import com.ust.weatherforecastapp.data.remote.response.RemoteWeatherResponse
-import com.ust.weatherforecastapp.locationLatLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -29,8 +24,6 @@ class ForecastRepositoryImpl(
     private val currentWeatherWeatherDao: CurrentWeatherWeatherDao,
     private val remoteWeatherDataSource: RemoteWeatherDataSource,
     private val locationProvider: LocationProvider,
-//    private val remoteWeatherService: RemoteWeatherService,
-//    private val currentLocationDao: CurrentLocationDao,
     private val locationEntryDao: LocationEntryDao
 ) : ForecastRepository {
 
@@ -103,12 +96,6 @@ class ForecastRepositoryImpl(
             locationEntryDao.updateCurrentLocation(fetchedLocation)
         }
     }
-
-//    private fun persistFetchedCurrentLocation(fetchedLocation: WeatherLocation) {
-//        GlobalScope.launch(Dispatchers.IO) {
-//            currentLocationDao.updateCurrentLocation(fetchedLocation)
-//        }
-//    }
 
     private suspend fun initWeatherData() {
         val lastLocationEntry = locationEntryDao.getLocation().value

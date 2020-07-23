@@ -2,6 +2,7 @@ package com.ust.weatherforecastapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,6 +15,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -63,8 +65,6 @@ class MainActivity : AppCompatActivity(), DIAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         navController = findNavController(R.id.fragment)
         bottomNavigationView.setupWithNavController(navController)
@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity(), DIAware {
         }else
             requestLocationPermission()
 
+        mainLoginLayout.setOnFocusChangeListener { view, b -> hideSoftKeyboard(view) }
     }
 
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
@@ -151,7 +152,6 @@ class MainActivity : AppCompatActivity(), DIAware {
             locationLatLong = listOf((locationGPS!!.latitude),locationGPS!!.longitude)
         }else{
             requestLocationPermission()
-            locationLatLong =
             throw LocationPermissionNotGrantedException()
         }
 
@@ -203,8 +203,8 @@ class MainActivity : AppCompatActivity(), DIAware {
         }
     }
 
-//    fun hideSoftKeyboard (view: View?) {
-//        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-//        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-//    }
+    fun hideSoftKeyboard (view: View?) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
 }

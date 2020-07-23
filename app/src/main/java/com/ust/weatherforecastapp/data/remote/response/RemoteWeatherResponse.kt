@@ -16,7 +16,7 @@ data class RemoteWeatherResponse(
     val currentWeatherEntry: CurrentWeatherEntry?,
     @SerializedName("daily")
     val forecastWeatherEntry: List<ForecastWeatherEntry>?,
-    val location: WeatherLocation,
+//    val location: WeatherLocation,
     val locationEntry: LocationEntry
 //    val lat: Double,
 //    val lon: Double,

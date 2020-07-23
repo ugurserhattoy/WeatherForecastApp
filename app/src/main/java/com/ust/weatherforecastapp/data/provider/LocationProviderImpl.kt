@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.ust.weatherforecastapp.MainActivity
+import com.ust.weatherforecastapp.data.db.LocationEntryDao
 import com.ust.weatherforecastapp.data.db.entity.LocationEntry
 import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
 import com.ust.weatherforecastapp.forecast.contextJ
@@ -25,12 +26,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
-
 const val USE_DEVICE_LOCATION = "USE_DEVICE_LOCATION"
 const val CUSTOM_LOCATION = "CUSTOM_LOCATION"
 
 class LocationProviderImpl(
-    private val fusedLocationProviderClient: FusedLocationProviderClient,
+    private val locationEntryDao: LocationEntryDao,
     context: Context
 ) : PreferenceProvider(context), LocationProvider {
 
@@ -52,7 +52,8 @@ class LocationProviderImpl(
 
     private fun getCustomLocationName(): String? {
         Log.d(TAG, "CustomLocation: ${preferences.getString(CUSTOM_LOCATION, null)}")
-        return preferences.getString(CUSTOM_LOCATION, null)
+        val offLineLocation = locationEntryDao.getLocationPlaceName()
+        return preferences.getString(CUSTOM_LOCATION, offLineLocation)
     }
 
     private fun getTheGeolocationOfCustomLocationName(locationName: String?): List<Double> {
