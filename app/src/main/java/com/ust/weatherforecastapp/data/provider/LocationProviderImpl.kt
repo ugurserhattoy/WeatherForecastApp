@@ -47,17 +47,7 @@ class LocationProviderImpl(
         }else{
             return getTheGeolocationOfCustomLocationName(getCustomLocationName())
         }
-//        if (isUsingDeviceLocation()) {
-//            try {
-//                val deviceLocation = getLastDeviceLocation().await()
-//                    ?: return "${getCustomLocationName()}"
-//                return "${deviceLocation.latitude},${deviceLocation.longitude}"
-//            }catch (e: LocationPermissionNotGrantedException) {
-//                return "${getCustomLocationName()}"
-//            }
-//        }
-//        else
-//            return "${getCustomLocationName()}"
+
     }
 
     private fun getCustomLocationName(): String? {
@@ -85,18 +75,6 @@ class LocationProviderImpl(
             return (throw LocationPermissionNotGrantedException())
     }
 
-//    @SuppressLint("MissingPermission")
-//    private suspend fun getLastDeviceLocation(): Deferred<Location?> {
-//
-//        Log.d("LocationProviderImpl", "getLastDeviceLocation")
-//        if (hasLocationPermission()) {
-//            Log.d("LocationProviderImpl", "getLastDeviceLocation= hasPermission")
-//            return fusedLocationProviderClient.lastLocation.asDeferred()
-//        }
-//        else
-//            return (throw LocationPermissionNotGrantedException())
-//    }
-
     private fun hasLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(appContext,
             Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -117,16 +95,6 @@ class LocationProviderImpl(
         return deviceLocationChanged || hasCustomLocationChanged(lastLocationEntry)
     }
 
-//    override suspend fun hasLocationChanged(lastWeatherLocation: WeatherLocation): Boolean {
-//        val deviceLocationChanged = try {
-//            hasDeviceLocationChanged(lastWeatherLocation)
-//        } catch (e: LocationPermissionNotGrantedException) {
-//            false
-//        }
-//
-//        return deviceLocationChanged || hasCustomLocationChanged(lastWeatherLocation)
-//    }
-
     private suspend fun hasDeviceLocationChanged(lastLocationEntry: LocationEntry): Boolean {
         if (!isUsingDeviceLocation())
             return false
@@ -139,19 +107,6 @@ class LocationProviderImpl(
                 Math.abs(deviceLocation[1] - lastLocationEntry.lon) > comparisonThreshold
     }
 
-//    private suspend fun hasDeviceLocationChanged(lastWeatherLocation: WeatherLocation): Boolean {
-//        if (!isUsingDeviceLocation())
-//            return false
-//
-//        val deviceLocation = getLastDeviceLocation().await()
-//            ?: return false
-//
-//        // Comparing doubles cannot be done with "=="
-//        val comparisonThreshold = 0.03
-//        return Math.abs(deviceLocation[0] - lastWeatherLocation.lat) > comparisonThreshold &&
-//                Math.abs(deviceLocation[1] - lastWeatherLocation.lon) > comparisonThreshold
-//    }
-
     private fun hasCustomLocationChanged(lastLocationEntry: LocationEntry): Boolean {
         if (!isUsingDeviceLocation()) {
             val customLocationName = getCustomLocationName()
@@ -159,12 +114,4 @@ class LocationProviderImpl(
         }
         return false
     }
-
-//    private fun hasCustomLocationChanged(lastWeatherLocation: WeatherLocation): Boolean {
-//        if (!isUsingDeviceLocation()) {
-//            val customLocationName = getCustomLocationName()
-//            return customLocationName != lastWeatherLocation.name
-//        }
-//        return false
-//    }
 }

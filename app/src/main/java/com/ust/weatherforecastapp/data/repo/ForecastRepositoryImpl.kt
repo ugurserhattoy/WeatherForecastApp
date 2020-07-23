@@ -70,24 +70,18 @@ class ForecastRepositoryImpl(
 
     override suspend fun getCurrentWeatherWeather(): LiveData<CurrentWeatherWeather> {
         return withContext(Dispatchers.IO) {
+            initWeatherData()
             return@withContext currentWeatherWeatherDao.getCurrentWeatherWeather()
         }
     }
 
     override suspend fun getLocationEntry(): LiveData<LocationEntry> {
         return withContext(Dispatchers.IO) {
+            initWeatherData()
             Log.d("ForecastRepoImpl", "locEntryDao: ${locationEntryDao.getLocation()}")
             return@withContext locationEntryDao.getLocation()
         }
     }
-
-
-//    override suspend fun getCurrentLocation(): LiveData<WeatherLocation> {
-//        return withContext(Dispatchers.IO) {
-//            return@withContext currentLocationDao.getLocation()
-//        }
-//    }
-
 
     private fun persistFetchedCurrentWeather(fetchedWeather: RemoteWeatherResponse) {
         GlobalScope.launch(Dispatchers.IO) {
@@ -117,13 +111,6 @@ class ForecastRepositoryImpl(
 //    }
 
     private suspend fun initWeatherData() {
-//        val lastWeatherLocation = currentLocationDao.getLocation().value
-//
-//        if (lastWeatherLocation == null
-//            || locationProvider.hasLocationChanged(lastWeatherLocation)) {
-//            fetchCurrentWeather()
-//            return
-//        }
         val lastLocationEntry = locationEntryDao.getLocation().value
 
         if (lastLocationEntry == null ||

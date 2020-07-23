@@ -49,7 +49,6 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
         return inflater.inflate(R.layout.forecast_fragment, container, false)
     }
 
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory)

@@ -145,34 +145,15 @@ class MainActivity : AppCompatActivity(), DIAware {
                         )
                     }
                 }
-                if (locationGPS != null && locationNetwork != null) {
-                    if (locationGPS!!.accuracy >= locationNetwork!!.accuracy) {
-                        Log.d(TAG, "NetworkLatitude: " + locationNetwork!!.latitude)
-                        Log.d(TAG, "NetworkLongitude: " + locationNetwork!!.longitude)
-                        locationLatLong = listOf(
-                            (locationNetwork!!.latitude),
-                            locationNetwork!!.longitude
-                        )
-                    } else {
-                        Log.d(TAG, "GPSLatitude: " + locationGPS!!.latitude)
-                        Log.d(TAG, "GPSLongitude: " + locationGPS!!.longitude)
-                        locationLatLong = listOf(
-                            (locationGPS!!.latitude),
-                            locationGPS!!.longitude
-                        )
-                    }
-                }
             } else {
                 requestLocationPermission()
             }
+            locationLatLong = listOf((locationGPS!!.latitude),locationGPS!!.longitude)
         }else{
             requestLocationPermission()
+            locationLatLong =
             throw LocationPermissionNotGrantedException()
         }
-        if (locationGPS==null) {
-            requestLocationPermission()
-        }
-        locationLatLong = listOf((locationGPS!!.latitude),locationGPS!!.longitude)
 
     }
     
