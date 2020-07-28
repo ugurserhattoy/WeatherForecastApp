@@ -31,8 +31,6 @@ import org.kodein.di.DIAware
 import org.kodein.di.android.x.closestDI
 import org.kodein.di.instance
 
-lateinit var contextJ: Context
-
 class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
     override val di by closestDI()
     private val viewModelFactory: ForecastViewModelFactory by instance()
@@ -52,10 +50,9 @@ class ForecastFragment : ScopedFragment(), DIAware, OnMapReadyCallback {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(ForecastViewModel::class.java)
-
-        contextJ = this.context as Context
 
         navBar.visibility = View.INVISIBLE
 

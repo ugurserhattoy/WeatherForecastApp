@@ -1,29 +1,17 @@
 package com.ust.weatherforecastapp.data.provider
 
 import android.Manifest
-import android.R.id.message
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
-import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.ust.weatherforecastapp.MainActivity
 import com.ust.weatherforecastapp.data.db.LocationEntryDao
 import com.ust.weatherforecastapp.data.db.entity.LocationEntry
-import com.ust.weatherforecastapp.data.db.entity.WeatherLocation
-import com.ust.weatherforecastapp.forecast.contextJ
 import com.ust.weatherforecastapp.interior.LocationPermissionNotGrantedException
-import com.ust.weatherforecastapp.interior.asDeferred
 import com.ust.weatherforecastapp.locationLatLong
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.ust.weatherforecastapp.mContext
 import java.util.*
 
 const val USE_DEVICE_LOCATION = "USE_DEVICE_LOCATION"
@@ -58,7 +46,7 @@ class LocationProviderImpl(
 
     private fun getTheGeolocationOfCustomLocationName(locationName: String?): List<Double> {
         val addresses: List<Address>
-        val geocoder: Geocoder = Geocoder(contextJ, Locale.getDefault())
+        val geocoder: Geocoder = Geocoder(mContext, Locale.getDefault())
         addresses = geocoder.getFromLocationName(locationName, 1)
         val addressGeolocation = listOf<Double>(addresses[0].latitude, addresses[0].longitude)
         Log.d(TAG, "addressGeolocation: $addressGeolocation")

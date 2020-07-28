@@ -13,8 +13,8 @@ import com.google.gson.reflect.TypeToken
 import com.ust.weatherforecastapp.data.db.entity.CurrentWeatherWeather
 import com.ust.weatherforecastapp.data.db.entity.LocationEntry
 import com.ust.weatherforecastapp.data.remote.response.RemoteWeatherResponse
-import com.ust.weatherforecastapp.forecast.contextJ
 import com.ust.weatherforecastapp.interior.NoConnectivityException
+import com.ust.weatherforecastapp.mContext
 import java.lang.reflect.Type
 import java.util.*
 
@@ -59,7 +59,7 @@ class RemoteWeatherDataSourceImpl(
 
             val geocoder: Geocoder
             val addresses: List<Address>
-            geocoder = Geocoder(contextJ, Locale.getDefault())
+            geocoder = Geocoder(mContext, Locale.getDefault())
 
             addresses = geocoder.getFromLocation(
                 latitude,

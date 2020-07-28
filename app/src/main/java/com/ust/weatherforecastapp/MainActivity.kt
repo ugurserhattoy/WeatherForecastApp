@@ -36,6 +36,7 @@ import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 
 lateinit var locationLatLong: List<Double>
+lateinit var mContext: Context
 
 private const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 35
@@ -68,6 +69,8 @@ class MainActivity : AppCompatActivity(), DIAware {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         navController = findNavController(R.id.fragment)
         bottomNavigationView.setupWithNavController(navController)
+
+        mContext = this.applicationContext
 
         requestLocationPermission()
 
