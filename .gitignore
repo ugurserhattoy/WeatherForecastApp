@@ -18,6 +18,9 @@
 /app/src/main/res/raw/*
 /src/main/res/raw/*
 /src/debug/res/values/google_maps_api.xml
+/src/debug/res/values/*
+google_maps_api.xml
+.values/*
 
 # Built application files
 *.apk
